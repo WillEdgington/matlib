@@ -1,0 +1,12 @@
+# Build Artefacts
+*.o
+*.d
+*.a
+
+# Dependency/Environment folders
+venv/
+
+# Compiled test binaries
+tests/**/test_*
+!tests/**/*.c
+!tests/**/*.h
