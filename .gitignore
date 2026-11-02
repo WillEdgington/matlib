@@ -10,3 +10,6 @@ venv/
 tests/**/test_*
 !tests/**/*.c
 !tests/**/*.h
+
+# ctest cache
+.ctest_cache
