@@ -1,0 +1,3 @@
+[submodule "deps/ctest"]
+	path = deps/ctest
+	url = https://github.com/WillEdgington/ctest.git
