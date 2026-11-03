@@ -4,14 +4,14 @@ LDFLAGS =
 DEVFLAGS = -fsanitize=address,undefined -g
 RELFLAGS = -O3
 
-DEP_DIRS := $(wildcard deps/*)
+DEP_DIRS := $(wildcard deps/*) $(wildcard deps/*/deps/*)
 DEP_NAMES := $(notdir $(DEP_DIRS))
 
 CFLAGS += $(foreach dir,$(DEP_DIRS),-I$(dir)/include)
 LDFLAGS += $(foreach dir,$(DEP_DIRS),-L$(dir))
 LDFLAGS += $(foreach name,$(DEP_NAMES),-l$(name))
 
-DEP_LIBS := $(foreach name,$(DEP_NAMES),deps/$(name)/lib$(name).a)
+DEP_LIBS := $(foreach dir,$(DEP_DIRS),$(if $(wildcard $(dir)/lib*.a),$(dir)/lib$(notdir $(dir)).a))
 
 LIB_A = libmatlib.a
 
