@@ -72,3 +72,13 @@ Matrix *matlib_matrix_rand(size_t rows, size_t cols, float min, float max) {
   }
   return mat;
 }
+
+float matlib_matrix_get(const Matrix *mat, size_t row, size_t col) {
+  size_t i = (mat->cols * row) + col;
+  return mat->data[i];
+}
+
+void matlib_matrix_set(Matrix *mat, size_t row, size_t col, float val) {
+  size_t i = (mat->cols * row) + col;
+  mat->data[i] = val;
+}
