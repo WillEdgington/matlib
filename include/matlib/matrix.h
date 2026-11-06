@@ -19,4 +19,6 @@ Matrix *matlib_matrix_rand(size_t rows, size_t cols, float min, float max);
 float matlib_matrix_get(const Matrix *mat, size_t row, size_t col);
 void matlib_matrix_set(Matrix *mat, size_t row, size_t col, float val);
 
+Matrix *matlib_matrix_transpose(const Matrix *mat);
+
 #endif

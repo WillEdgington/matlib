@@ -82,3 +82,18 @@ void matlib_matrix_set(Matrix *mat, size_t row, size_t col, float val) {
   size_t i = (mat->cols * row) + col;
   mat->data[i] = val;
 }
+
+Matrix *matlib_matrix_transpose(const Matrix *mat) {
+  Matrix *t_mat = matlib_matrix_create(mat->cols, mat->rows);
+  if (t_mat == NULL) {
+    return NULL;
+  }
+
+  for (size_t r = 0; r < mat->rows; r++) {
+    for (size_t c = 0; c < mat->cols; c++) {
+      t_mat->data[(mat->rows * c) + r] = mat->data[(mat->cols * r) + c];
+    }
+  }
+
+  return t_mat;
+}
