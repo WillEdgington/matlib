@@ -190,3 +190,74 @@ CTEST(SUITE_NAME, test_matrix_set_in_bound) {
 
   matlib_matrix_free(mat);
 }
+
+CTEST(SUITE_NAME, test_matrix_transpose_square) {
+  Matrix *mat = matlib_matrix_zeros(2, 2);
+
+  matlib_matrix_set(mat, 0, 1, 1.0f);
+  matlib_matrix_set(mat, 1, 0, 2.0f);
+  matlib_matrix_set(mat, 1, 1, 3.0f);
+
+  Matrix *t_mat = matlib_matrix_transpose(mat);
+  ASSERT_PTR_NOT_NULL(
+      t_mat,
+      "Returned transposed matrix pointer should not be NULL (square type)");
+  ASSERT_INT_EQ(t_mat->rows, mat->cols,
+                "Transposed rows should match original columns");
+  ASSERT_INT_EQ(t_mat->cols, mat->rows,
+                "Transposed columns should match original rows");
+
+  ASSERT_DOUBLE_EQ(t_mat->data[0], mat->data[0], EPSILON_VAL,
+                   "Element at (0,0) should remain unchanged (square type)");
+  ASSERT_DOUBLE_EQ(t_mat->data[1], mat->data[2], EPSILON_VAL,
+                   "Element (0,1) in transposed should come from (1,0) in "
+                   "original (square type)");
+  ASSERT_DOUBLE_EQ(t_mat->data[2], mat->data[1], EPSILON_VAL,
+                   "Element (1,0) in transposed should come from (0,1) in "
+                   "original (square type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[3], mat->data[3], EPSILON_VAL,
+      "Element at bottom-right should remain unchanged (square type)");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(t_mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_transpose_rectangle) {
+  Matrix *mat = matlib_matrix_zeros(2, 3);
+
+  matlib_matrix_set(mat, 0, 1, 1.0f);
+  matlib_matrix_set(mat, 0, 2, 2.0f);
+  matlib_matrix_set(mat, 1, 0, 3.0f);
+  matlib_matrix_set(mat, 1, 1, 4.0f);
+  matlib_matrix_set(mat, 1, 2, 5.0f);
+
+  Matrix *t_mat = matlib_matrix_transpose(mat);
+  ASSERT_PTR_NOT_NULL(
+      t_mat,
+      "Returned transposed matrix pointer should not be NULL (rectangle type)");
+  ASSERT_INT_EQ(t_mat->rows, mat->cols,
+                "Transposed rows should match original columns");
+  ASSERT_INT_EQ(t_mat->cols, mat->rows,
+                "Transposed columns should match original rows");
+
+  ASSERT_DOUBLE_EQ(t_mat->data[0], mat->data[0], EPSILON_VAL,
+                   "Top-left element (0,0) matches (rectangle type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[1], mat->data[3], EPSILON_VAL,
+      "Transposed element at index 1 maps correctly (rectangle type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[2], mat->data[1], EPSILON_VAL,
+      "Transposed element at index 2 maps correctly (rectangle type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[3], mat->data[4], EPSILON_VAL,
+      "Transposed element at index 3 maps correctly (rectangle type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[4], mat->data[2], EPSILON_VAL,
+      "Transposed element at index 4 maps correctly (rectangle type)");
+  ASSERT_DOUBLE_EQ(t_mat->data[5], mat->data[5], EPSILON_VAL,
+                   "Bottom-right element matches (rectangle type)");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(t_mat);
+}
