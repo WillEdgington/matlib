@@ -160,3 +160,33 @@ CTEST(SUITE_NAME, test_matrix_rand_all_items_rand_in_bounds) {
          "");
   matlib_matrix_free(mat);
 }
+
+CTEST(SUITE_NAME, test_matrix_get_in_bound) {
+  Matrix *mat = matlib_matrix_zeros(7, 3);
+
+  mat->data[(2 * 3) + 1] = 4.0f;
+  ASSERT_DOUBLE_EQ(
+      matlib_matrix_get(mat, 2, 1), 4.0f, EPSILON_VAL,
+      "matlib_matrix_get() call should return the value at (row, col)");
+
+  matlib_matrix_free(mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_set_in_bound) {
+  Matrix *mat = matlib_matrix_zeros(1, 3);
+
+  matlib_matrix_set(mat, 0, 0, 5.0f);
+  matlib_matrix_set(mat, 0, 2, 3.4f);
+
+  ASSERT_DOUBLE_EQ(mat->data[0], 5.0f, EPSILON_VAL,
+                   "matlib_matrix_set() call with (0, 0) and value 5.0f should "
+                   "set element to 5.0f");
+  ASSERT_DOUBLE_EQ(mat->data[2], 3.4f, EPSILON_VAL,
+                   "matlib_matrix_set() call with (0, 2) and value 3.4f should "
+                   "set element to 3.4f");
+  ASSERT_DOUBLE_EQ(
+      mat->data[1], 0.0f, EPSILON_VAL,
+      "Unset (r, c) should remain unchanged after matlib_matrix_set() calls");
+
+  matlib_matrix_free(mat);
+}
