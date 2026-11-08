@@ -133,3 +133,39 @@ Matrix *matlib_matrix_mul_elementwise(const Matrix *a, const Matrix *b) {
   }
   return c;
 }
+
+Matrix *matlib_matrix_add_scalar(const Matrix *mat, float scalar) {
+  Matrix *res = matlib_matrix_create(mat->rows, mat->cols);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < mat->rows * mat->cols; i++) {
+    res->data[i] = mat->data[i] + scalar;
+  }
+  return res;
+}
+
+Matrix *matlib_matrix_sub_scalar(const Matrix *mat, float scalar) {
+  Matrix *res = matlib_matrix_create(mat->rows, mat->cols);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < mat->rows * mat->cols; i++) {
+    res->data[i] = mat->data[i] - scalar;
+  }
+  return res;
+}
+
+Matrix *matlib_matrix_scale(const Matrix *mat, float scalar) {
+  Matrix *res = matlib_matrix_create(mat->rows, mat->cols);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < mat->rows * mat->cols; i++) {
+    res->data[i] = mat->data[i] * scalar;
+  }
+  return res;
+}
