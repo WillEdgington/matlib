@@ -261,3 +261,75 @@ CTEST(SUITE_NAME, test_matrix_transpose_rectangle) {
   matlib_matrix_free(mat);
   matlib_matrix_free(t_mat);
 }
+
+CTEST(SUITE_NAME, test_matrix_add) {
+  Matrix *a = matlib_matrix_rand(2, 2, -10.0f, 10.0f);
+  Matrix *b = matlib_matrix_rand(2, 2, -10.0f, 10.0f);
+
+  Matrix *c = matlib_matrix_add(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c, "matlib_matrix_add() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(c->rows, a->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(c->cols, a->cols, "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] + b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] + b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] + b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[3], a->data[3] + b->data[3], EPSILON_VAL,
+                   "Element at flat index 3 should equal sum of inputs");
+
+  matlib_matrix_free(a);
+  matlib_matrix_free(b);
+  matlib_matrix_free(c);
+}
+
+CTEST(SUITE_NAME, test_matrix_sub) {
+  Matrix *a = matlib_matrix_rand(3, 1, -10.0f, 10.0f);
+  Matrix *b = matlib_matrix_rand(3, 1, -10.0f, 10.0f);
+
+  Matrix *c = matlib_matrix_sub(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c, "matlib_matrix_sub() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(c->rows, a->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(c->cols, a->cols, "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] - b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal difference of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] - b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal difference of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] - b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal difference of inputs");
+
+  matlib_matrix_free(a);
+  matlib_matrix_free(b);
+  matlib_matrix_free(c);
+}
+
+CTEST(SUITE_NAME, test_matrix_mul_elementwise) {
+  Matrix *a = matlib_matrix_rand(1, 3, -10.0f, 10.0f);
+  Matrix *b = matlib_matrix_rand(1, 3, -10.0f, 10.0f);
+
+  Matrix *c = matlib_matrix_mul_elementwise(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c,
+      "matlib_matrix_mul_elementwise() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(c->rows, a->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(c->cols, a->cols, "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] * b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal product of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] * b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal product of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] * b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal product of inputs");
+
+  matlib_matrix_free(a);
+  matlib_matrix_free(b);
+  matlib_matrix_free(c);
+}
