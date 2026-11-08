@@ -333,3 +333,71 @@ CTEST(SUITE_NAME, test_matrix_mul_elementwise) {
   matlib_matrix_free(b);
   matlib_matrix_free(c);
 }
+
+CTEST(SUITE_NAME, test_matrix_add_scalar) {
+  Matrix *mat = matlib_matrix_rand(3, 1, -10.0f, 10.0f);
+
+  Matrix *res = matlib_matrix_add_scalar(mat, 5.0f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_matrix_add_scalar() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(res->rows, mat->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(res->cols, mat->cols,
+                "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(res->data[0], mat->data[0] + 5.0f, EPSILON_VAL,
+                   "Element at index 0 should equal input + scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], mat->data[1] + 5.0f, EPSILON_VAL,
+                   "Element at index 1 should equal input + scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], mat->data[2] + 5.0f, EPSILON_VAL,
+                   "Element at index 2 should equal input + scalar");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(res);
+}
+
+CTEST(SUITE_NAME, test_matrix_sub_scalar) {
+  Matrix *mat = matlib_matrix_rand(2, 2, -10.0f, 10.0f);
+
+  Matrix *res = matlib_matrix_sub_scalar(mat, 8.3f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_matrix_sub_scalar() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(res->rows, mat->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(res->cols, mat->cols,
+                "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(res->data[0], mat->data[0] - 8.3f, EPSILON_VAL,
+                   "Element at index 0 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], mat->data[1] - 8.3f, EPSILON_VAL,
+                   "Element at index 1 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], mat->data[2] - 8.3f, EPSILON_VAL,
+                   "Element at index 2 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[3], mat->data[3] - 8.3f, EPSILON_VAL,
+                   "Element at index 3 should equal input - scalar");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(res);
+}
+
+CTEST(SUITE_NAME, test_matrix_scale) {
+  Matrix *mat = matlib_matrix_rand(1, 3, -10.0f, 10.0f);
+
+  Matrix *res = matlib_matrix_scale(mat, 3.14f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_matrix_scale() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(res->rows, mat->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(res->cols, mat->cols,
+                "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(res->data[0], mat->data[0] * 3.14f, EPSILON_VAL,
+                   "Element at index 0 should equal input * scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], mat->data[1] * 3.14f, EPSILON_VAL,
+                   "Element at index 1 should equal input * scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], mat->data[2] * 3.14f, EPSILON_VAL,
+                   "Element at index 2 should equal input * scalar");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(res);
+}
