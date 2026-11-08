@@ -97,3 +97,39 @@ Matrix *matlib_matrix_transpose(const Matrix *mat) {
 
   return t_mat;
 }
+
+Matrix *matlib_matrix_add(const Matrix *a, const Matrix *b) {
+  Matrix *c = matlib_matrix_create(a->rows, a->cols);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < a->rows * a->cols; i++) {
+    c->data[i] = a->data[i] + b->data[i];
+  }
+  return c;
+}
+
+Matrix *matlib_matrix_sub(const Matrix *a, const Matrix *b) {
+  Matrix *c = matlib_matrix_create(a->rows, a->cols);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < a->rows * a->cols; i++) {
+    c->data[i] = a->data[i] - b->data[i];
+  }
+  return c;
+}
+
+Matrix *matlib_matrix_mul_elementwise(const Matrix *a, const Matrix *b) {
+  Matrix *c = matlib_matrix_create(a->rows, a->cols);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < a->rows * a->cols; i++) {
+    c->data[i] = a->data[i] * b->data[i];
+  }
+  return c;
+}

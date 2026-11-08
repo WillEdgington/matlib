@@ -21,4 +21,8 @@ void matlib_matrix_set(Matrix *mat, size_t row, size_t col, float val);
 
 Matrix *matlib_matrix_transpose(const Matrix *mat);
 
+Matrix *matlib_matrix_add(const Matrix *a, const Matrix *b);
+Matrix *matlib_matrix_sub(const Matrix *a, const Matrix *b);
+Matrix *matlib_matrix_mul_elementwise(const Matrix *a, const Matrix *b);
+
 #endif
