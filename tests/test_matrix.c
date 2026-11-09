@@ -160,3 +160,244 @@ CTEST(SUITE_NAME, test_matrix_rand_all_items_rand_in_bounds) {
          "");
   matlib_matrix_free(mat);
 }
+
+CTEST(SUITE_NAME, test_matrix_get_in_bound) {
+  Matrix *mat = matlib_matrix_zeros(7, 3);
+
+  mat->data[(2 * 3) + 1] = 4.0f;
+  ASSERT_DOUBLE_EQ(
+      matlib_matrix_get(mat, 2, 1), 4.0f, EPSILON_VAL,
+      "matlib_matrix_get() call should return the value at (row, col)");
+
+  matlib_matrix_free(mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_set_in_bound) {
+  Matrix *mat = matlib_matrix_zeros(1, 3);
+
+  matlib_matrix_set(mat, 0, 0, 5.0f);
+  matlib_matrix_set(mat, 0, 2, 3.4f);
+
+  ASSERT_DOUBLE_EQ(mat->data[0], 5.0f, EPSILON_VAL,
+                   "matlib_matrix_set() call with (0, 0) and value 5.0f should "
+                   "set element to 5.0f");
+  ASSERT_DOUBLE_EQ(mat->data[2], 3.4f, EPSILON_VAL,
+                   "matlib_matrix_set() call with (0, 2) and value 3.4f should "
+                   "set element to 3.4f");
+  ASSERT_DOUBLE_EQ(
+      mat->data[1], 0.0f, EPSILON_VAL,
+      "Unset (r, c) should remain unchanged after matlib_matrix_set() calls");
+
+  matlib_matrix_free(mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_transpose_square) {
+  Matrix *mat = matlib_matrix_zeros(2, 2);
+
+  matlib_matrix_set(mat, 0, 1, 1.0f);
+  matlib_matrix_set(mat, 1, 0, 2.0f);
+  matlib_matrix_set(mat, 1, 1, 3.0f);
+
+  Matrix *t_mat = matlib_matrix_transpose(mat);
+  ASSERT_PTR_NOT_NULL(
+      t_mat,
+      "Returned transposed matrix pointer should not be NULL (square type)");
+  ASSERT_INT_EQ(t_mat->rows, mat->cols,
+                "Transposed rows should match original columns");
+  ASSERT_INT_EQ(t_mat->cols, mat->rows,
+                "Transposed columns should match original rows");
+
+  ASSERT_DOUBLE_EQ(t_mat->data[0], mat->data[0], EPSILON_VAL,
+                   "Element at (0,0) should remain unchanged (square type)");
+  ASSERT_DOUBLE_EQ(t_mat->data[1], mat->data[2], EPSILON_VAL,
+                   "Element (0,1) in transposed should come from (1,0) in "
+                   "original (square type)");
+  ASSERT_DOUBLE_EQ(t_mat->data[2], mat->data[1], EPSILON_VAL,
+                   "Element (1,0) in transposed should come from (0,1) in "
+                   "original (square type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[3], mat->data[3], EPSILON_VAL,
+      "Element at bottom-right should remain unchanged (square type)");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(t_mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_transpose_rectangle) {
+  Matrix *mat = matlib_matrix_zeros(2, 3);
+
+  matlib_matrix_set(mat, 0, 1, 1.0f);
+  matlib_matrix_set(mat, 0, 2, 2.0f);
+  matlib_matrix_set(mat, 1, 0, 3.0f);
+  matlib_matrix_set(mat, 1, 1, 4.0f);
+  matlib_matrix_set(mat, 1, 2, 5.0f);
+
+  Matrix *t_mat = matlib_matrix_transpose(mat);
+  ASSERT_PTR_NOT_NULL(
+      t_mat,
+      "Returned transposed matrix pointer should not be NULL (rectangle type)");
+  ASSERT_INT_EQ(t_mat->rows, mat->cols,
+                "Transposed rows should match original columns");
+  ASSERT_INT_EQ(t_mat->cols, mat->rows,
+                "Transposed columns should match original rows");
+
+  ASSERT_DOUBLE_EQ(t_mat->data[0], mat->data[0], EPSILON_VAL,
+                   "Top-left element (0,0) matches (rectangle type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[1], mat->data[3], EPSILON_VAL,
+      "Transposed element at index 1 maps correctly (rectangle type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[2], mat->data[1], EPSILON_VAL,
+      "Transposed element at index 2 maps correctly (rectangle type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[3], mat->data[4], EPSILON_VAL,
+      "Transposed element at index 3 maps correctly (rectangle type)");
+  ASSERT_DOUBLE_EQ(
+      t_mat->data[4], mat->data[2], EPSILON_VAL,
+      "Transposed element at index 4 maps correctly (rectangle type)");
+  ASSERT_DOUBLE_EQ(t_mat->data[5], mat->data[5], EPSILON_VAL,
+                   "Bottom-right element matches (rectangle type)");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(t_mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_add) {
+  Matrix *a = matlib_matrix_rand(2, 2, -10.0f, 10.0f);
+  Matrix *b = matlib_matrix_rand(2, 2, -10.0f, 10.0f);
+
+  Matrix *c = matlib_matrix_add(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c, "matlib_matrix_add() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(c->rows, a->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(c->cols, a->cols, "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] + b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] + b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] + b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[3], a->data[3] + b->data[3], EPSILON_VAL,
+                   "Element at flat index 3 should equal sum of inputs");
+
+  matlib_matrix_free(a);
+  matlib_matrix_free(b);
+  matlib_matrix_free(c);
+}
+
+CTEST(SUITE_NAME, test_matrix_sub) {
+  Matrix *a = matlib_matrix_rand(3, 1, -10.0f, 10.0f);
+  Matrix *b = matlib_matrix_rand(3, 1, -10.0f, 10.0f);
+
+  Matrix *c = matlib_matrix_sub(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c, "matlib_matrix_sub() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(c->rows, a->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(c->cols, a->cols, "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] - b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal difference of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] - b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal difference of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] - b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal difference of inputs");
+
+  matlib_matrix_free(a);
+  matlib_matrix_free(b);
+  matlib_matrix_free(c);
+}
+
+CTEST(SUITE_NAME, test_matrix_mul_elementwise) {
+  Matrix *a = matlib_matrix_rand(1, 3, -10.0f, 10.0f);
+  Matrix *b = matlib_matrix_rand(1, 3, -10.0f, 10.0f);
+
+  Matrix *c = matlib_matrix_mul_elementwise(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c,
+      "matlib_matrix_mul_elementwise() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(c->rows, a->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(c->cols, a->cols, "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] * b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal product of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] * b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal product of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] * b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal product of inputs");
+
+  matlib_matrix_free(a);
+  matlib_matrix_free(b);
+  matlib_matrix_free(c);
+}
+
+CTEST(SUITE_NAME, test_matrix_add_scalar) {
+  Matrix *mat = matlib_matrix_rand(3, 1, -10.0f, 10.0f);
+
+  Matrix *res = matlib_matrix_add_scalar(mat, 5.0f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_matrix_add_scalar() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(res->rows, mat->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(res->cols, mat->cols,
+                "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(res->data[0], mat->data[0] + 5.0f, EPSILON_VAL,
+                   "Element at index 0 should equal input + scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], mat->data[1] + 5.0f, EPSILON_VAL,
+                   "Element at index 1 should equal input + scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], mat->data[2] + 5.0f, EPSILON_VAL,
+                   "Element at index 2 should equal input + scalar");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(res);
+}
+
+CTEST(SUITE_NAME, test_matrix_sub_scalar) {
+  Matrix *mat = matlib_matrix_rand(2, 2, -10.0f, 10.0f);
+
+  Matrix *res = matlib_matrix_sub_scalar(mat, 8.3f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_matrix_sub_scalar() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(res->rows, mat->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(res->cols, mat->cols,
+                "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(res->data[0], mat->data[0] - 8.3f, EPSILON_VAL,
+                   "Element at index 0 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], mat->data[1] - 8.3f, EPSILON_VAL,
+                   "Element at index 1 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], mat->data[2] - 8.3f, EPSILON_VAL,
+                   "Element at index 2 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[3], mat->data[3] - 8.3f, EPSILON_VAL,
+                   "Element at index 3 should equal input - scalar");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(res);
+}
+
+CTEST(SUITE_NAME, test_matrix_scale) {
+  Matrix *mat = matlib_matrix_rand(1, 3, -10.0f, 10.0f);
+
+  Matrix *res = matlib_matrix_scale(mat, 3.14f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_matrix_scale() should return a valid Matrix pointer");
+  ASSERT_INT_EQ(res->rows, mat->rows, "Result matrix should match input rows");
+  ASSERT_INT_EQ(res->cols, mat->cols,
+                "Result matrix should match input columns");
+
+  ASSERT_DOUBLE_EQ(res->data[0], mat->data[0] * 3.14f, EPSILON_VAL,
+                   "Element at index 0 should equal input * scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], mat->data[1] * 3.14f, EPSILON_VAL,
+                   "Element at index 1 should equal input * scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], mat->data[2] * 3.14f, EPSILON_VAL,
+                   "Element at index 2 should equal input * scalar");
+
+  matlib_matrix_free(mat);
+  matlib_matrix_free(res);
+}
