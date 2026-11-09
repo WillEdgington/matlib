@@ -169,3 +169,25 @@ Matrix *matlib_matrix_scale(const Matrix *mat, float scalar) {
   }
   return res;
 }
+
+Matrix *matlib_matrix_mul(const Matrix *a, const Matrix *b) {
+  Matrix *c = matlib_matrix_zeros(a->rows, b->cols);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  size_t m = a->rows;
+  size_t k = a->cols;
+  size_t n = b->cols;
+
+  for (size_t i = 0; i < m; i++) {
+    for (size_t p = 0; p < k; p++) {
+      float a_val = a->data[(i * k) + p];
+      for (size_t j = 0; j < n; j++) {
+        c->data[(i * n) + j] += a_val * b->data[(p * n) + j];
+      }
+    }
+  }
+
+  return c;
+}
