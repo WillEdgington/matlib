@@ -31,4 +31,9 @@ Matrix *matlib_matrix_scale(const Matrix *mat, float scalar);
 
 Matrix *matlib_matrix_mul(const Matrix *a, const Matrix *b);
 
+float matlib_matrix_sum(const Matrix *mat);
+float matlib_matrix_mean(const Matrix *mat);
+float matlib_matrix_max(const Matrix *mat);
+float matlib_matrix_min(const Matrix *mat);
+
 #endif
