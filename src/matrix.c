@@ -191,3 +191,42 @@ Matrix *matlib_matrix_mul(const Matrix *a, const Matrix *b) {
 
   return c;
 }
+
+float matlib_matrix_sum(const Matrix *mat) {
+  float res = mat->data[0];
+
+  for (size_t i = 1; i < mat->cols * mat->rows; i++) {
+    res += mat->data[i];
+  }
+  return res;
+}
+
+float matlib_matrix_mean(const Matrix *mat) {
+  return matlib_matrix_sum(mat) / (mat->cols * mat->rows);
+}
+
+float matlib_matrix_max(const Matrix *mat) {
+  float res = mat->data[0];
+
+  for (size_t i = 1; i < mat->cols * mat->rows; i++) {
+    float cur = mat->data[i];
+    if (cur > res) {
+      res = cur;
+    }
+  }
+
+  return res;
+}
+
+float matlib_matrix_min(const Matrix *mat) {
+  float res = mat->data[0];
+
+  for (size_t i = 1; i < mat->cols * mat->rows; i++) {
+    float cur = mat->data[i];
+    if (cur < res) {
+      res = cur;
+    }
+  }
+
+  return res;
+}
