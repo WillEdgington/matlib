@@ -29,4 +29,6 @@ Matrix *matlib_matrix_add_scalar(const Matrix *mat, float scalar);
 Matrix *matlib_matrix_sub_scalar(const Matrix *mat, float scalar);
 Matrix *matlib_matrix_scale(const Matrix *mat, float scalar);
 
+Matrix *matlib_matrix_mul(const Matrix *a, const Matrix *b);
+
 #endif
