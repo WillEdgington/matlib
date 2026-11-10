@@ -471,3 +471,91 @@ CTEST(SUITE_NAME, test_matrix_mul_rectangles) {
   matlib_matrix_free(b);
   matlib_matrix_free(c);
 }
+
+CTEST(SUITE_NAME, test_matrix_sum_mixed) {
+  Matrix *mat = matlib_matrix_create(2, 2);
+
+  mat->data[0] = 4.3f;
+  mat->data[1] = -2.0f;
+  mat->data[2] = 0.0f;
+  mat->data[3] = -3.7f;
+
+  ASSERT_DOUBLE_EQ(matlib_matrix_sum(mat), -1.4f, EPSILON_VAL,
+                   "matlib_matrix_sum() call should return accumalated sum of "
+                   "matrix elements");
+
+  matlib_matrix_free(mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_mean_mixed) {
+  Matrix *mat = matlib_matrix_create(2, 2);
+
+  mat->data[0] = 6.2f;
+  mat->data[1] = 10.0f;
+  mat->data[2] = -17.4f;
+  mat->data[3] = 3.8f;
+
+  ASSERT_DOUBLE_EQ(matlib_matrix_mean(mat), 0.65, EPSILON_VAL,
+                   "matlib_matrix_mean() call should return the mean of the "
+                   "matrix elements");
+
+  matlib_matrix_free(mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_max_mixed) {
+  Matrix *mat = matlib_matrix_create(1, 3);
+
+  mat->data[0] = 0.0f;
+  mat->data[1] = 4.3f;
+  mat->data[2] = -1.6f;
+
+  ASSERT_DOUBLE_EQ(matlib_matrix_max(mat), 4.3f, EPSILON_VAL,
+                   "matlib_matrix_max() call should return the greatest "
+                   "element in the matrix");
+
+  matlib_matrix_free(mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_max_negative) {
+  Matrix *mat = matlib_matrix_create(2, 2);
+
+  mat->data[0] = -10.4f;
+  mat->data[1] = -6.2f;
+  mat->data[2] = -2.5f;
+  mat->data[3] = -8.7f;
+
+  ASSERT_DOUBLE_EQ(matlib_matrix_max(mat), -2.5f, EPSILON_VAL,
+                   "matlib_matrix_max() call should return greatest element of "
+                   "completely negative matrix");
+
+  matlib_matrix_free(mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_min_mixed) {
+  Matrix *mat = matlib_matrix_create(2, 2);
+
+  mat->data[0] = 5.2f;
+  mat->data[1] = 2.0f;
+  mat->data[2] = -9.4f;
+  mat->data[3] = 0.4f;
+
+  ASSERT_DOUBLE_EQ(matlib_matrix_min(mat), -9.4f, EPSILON_VAL,
+                   "matlib_matrix_min() call should return the smallest "
+                   "element in the matrix");
+
+  matlib_matrix_free(mat);
+}
+
+CTEST(SUITE_NAME, test_matrix_min_positive) {
+  Matrix *mat = matlib_matrix_create(3, 1);
+
+  mat->data[0] = 1.4f;
+  mat->data[1] = 4.8f;
+  mat->data[2] = 3.1f;
+
+  ASSERT_DOUBLE_EQ(matlib_matrix_min(mat), 1.4f, EPSILON_VAL,
+                   "matlib_matrix_min() call should return smallest element of "
+                   "matrix where all elements are > 0");
+
+  matlib_matrix_free(mat);
+}
