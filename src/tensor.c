@@ -132,3 +132,45 @@ void matlib_tensor_set(Tensor *tensor, const size_t *coords, float val) {
   size_t flat_idx = flatten_coords(tensor, coords);
   tensor->data[flat_idx] = val;
 }
+
+Tensor *matlib_tensor_reshape(const Tensor *tensor, size_t new_ndim,
+                              const size_t *new_shape) {
+  Tensor *new = matlib_tensor_create(new_ndim, new_shape);
+  if (new == NULL || new->total_size != tensor->total_size) {
+    matlib_tensor_free(new);
+    return NULL;
+  }
+
+  memcpy(new->data, tensor->data, new->total_size * sizeof(float));
+  return new;
+}
+
+Tensor *matlib_tensor_permute(const Tensor *tensor, const size_t *axes) {
+  size_t new_shape[tensor->ndim];
+  for (size_t i = 0; i < tensor->ndim; i++) {
+    new_shape[i] = tensor->shape[axes[i]];
+  }
+
+  Tensor *new = matlib_tensor_create(tensor->ndim, new_shape);
+  if (new == NULL) {
+    return NULL;
+  }
+
+  size_t coords[tensor->ndim];
+  for (size_t i = 0; i < new->total_size; i++) {
+    size_t temp = i;
+    for (int dim = (int)tensor->ndim - 1; dim >= 0; dim--) {
+      coords[dim] = temp % new->shape[dim];
+      temp /= new->shape[dim];
+    }
+
+    size_t orig_flat_idx = 0;
+    for (size_t dim = 0; dim < tensor->ndim; dim++) {
+      orig_flat_idx += coords[dim] * tensor->strides[axes[dim]];
+    }
+
+    new->data[i] = tensor->data[orig_flat_idx];
+  }
+
+  return new;
+}
