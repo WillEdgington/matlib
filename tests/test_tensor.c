@@ -1,0 +1,230 @@
+#include "matlib/tensor.h"
+#include <ctest/ctest.h>
+#include <stdint.h>
+
+#define SUITE_NAME test_tensor
+#define EPSILON_VAL 0.0001f
+
+CTEST(SUITE_NAME, test_tensor_create_zero_dim) {
+  size_t shape[] = {4, 0, 1};
+  Tensor *t = matlib_tensor_create(3, shape);
+
+  ASSERT_PTR_NULL(t, "matlib_tensor_create() should return a NULL pointer when "
+                     "a dimension is zeros");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_create_0d) {
+  size_t shape[1];
+  Tensor *t = matlib_tensor_create(0, shape);
+
+  ASSERT_PTR_NULL(
+      t, "matlib_tensor_create() should return a NULL pointer when ndim is 0");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_create_3d_valid) {
+  size_t shape[] = {2, 3, 4};
+  Tensor *t = matlib_tensor_create(3, shape);
+
+  ASSERT_PTR_NOT_NULL(
+      t, "matlib_tensor_create() should return a valid Tensor pointer (3D)");
+  ASSERT_INT_EQ(t->ndim, 3, "Tensor->ndim should match input ndim (3D)");
+  ASSERT_INT_EQ(t->total_size, 24,
+                "Tensor->total_size should be product of shape (3D)");
+  ASSERT((uintptr_t)t->data % 32 == 0,
+         "Pointer to tensor data should be 32-byte alligned");
+
+  ASSERT_INT_EQ(t->shape[0], 2, "");
+  ASSERT_INT_EQ(t->shape[1], 3, "");
+  ASSERT_INT_EQ(t->shape[2], 4, "");
+
+  ASSERT_INT_EQ(t->strides[0], 12, "");
+  ASSERT_INT_EQ(t->strides[1], 4, "");
+  ASSERT_INT_EQ(t->strides[2], 1, "");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_create_5d_valid) {
+  size_t shape[] = {3, 4, 2, 5, 2};
+  Tensor *t = matlib_tensor_create(5, shape);
+
+  ASSERT_PTR_NOT_NULL(
+      t, "matlib_tensor_create() should return a valid Tensor pointer (5D)");
+  ASSERT_INT_EQ(t->ndim, 5, "Tensor->ndim should match input ndim (5D)");
+  ASSERT_INT_EQ(t->total_size, 240,
+                "Tensor->total_size should be product of shape (5D)");
+
+  ASSERT_INT_EQ(t->shape[0], 3, "");
+  ASSERT_INT_EQ(t->shape[1], 4, "");
+  ASSERT_INT_EQ(t->shape[2], 2, "");
+  ASSERT_INT_EQ(t->shape[3], 5, "");
+  ASSERT_INT_EQ(t->shape[4], 2, "");
+
+  ASSERT_INT_EQ(t->strides[0], 80, "");
+  ASSERT_INT_EQ(t->strides[1], 20, "");
+  ASSERT_INT_EQ(t->strides[2], 10, "");
+  ASSERT_INT_EQ(t->strides[3], 2, "");
+  ASSERT_INT_EQ(t->strides[4], 1, "");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_zeros_zero_dim) {
+  size_t shape[] = {9, 4, 5, 0, 2};
+  Tensor *t = matlib_tensor_zeros(5, shape);
+
+  ASSERT_PTR_NULL(t, "matlib_tensor_zeros() should return a NULL pointer when "
+                     "a dimension is zeros");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_zeros_0d) {
+  size_t shape[1];
+  Tensor *t = matlib_tensor_zeros(0, shape);
+
+  ASSERT_PTR_NULL(
+      t, "matlib_tensor_zeros() should return a NULL pointer when ndim is 0");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_zeros_valid) {
+  size_t shape[] = {2, 6, 2, 3};
+  Tensor *t = matlib_tensor_zeros(4, shape);
+
+  ASSERT_PTR_NOT_NULL(
+      t, "matlib_tensor_zeros() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(t->ndim, 4,
+                "Zero-initialised tensor ndim value should match input ndim");
+  ASSERT_INT_EQ(
+      t->total_size, 72,
+      "Zero-initialised tensor total_size value should be product of shape");
+
+  ASSERT_INT_EQ(t->shape[0], 2, "");
+  ASSERT_INT_EQ(t->shape[1], 6, "");
+  ASSERT_INT_EQ(t->shape[2], 2, "");
+  ASSERT_INT_EQ(t->shape[3], 3, "");
+
+  ASSERT_INT_EQ(t->strides[0], 36, "");
+  ASSERT_INT_EQ(t->strides[1], 6, "");
+  ASSERT_INT_EQ(t->strides[2], 3, "");
+  ASSERT_INT_EQ(t->strides[3], 1, "");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_zeros_all_items_zero) {
+  size_t shape[] = {2, 1};
+  Tensor *t = matlib_tensor_zeros(2, shape);
+  ASSERT_DOUBLE_EQ(t->data[0], 0.0f, EPSILON_VAL, "");
+  ASSERT_DOUBLE_EQ(t->data[1], 0.0f, EPSILON_VAL, "");
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_ones_zero_dim) {
+  size_t shape[] = {0, 7, 3};
+  Tensor *t = matlib_tensor_ones(3, shape);
+
+  ASSERT_PTR_NULL(t, "matlib_tensor_ones() should return a NULL pointer when a "
+                     "dimension is zeros");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_ones_0d) {
+  size_t shape[1];
+  Tensor *t = matlib_tensor_ones(0, shape);
+
+  ASSERT_PTR_NULL(
+      t, "matlib_tensor_ones() should return a NULL pointer when ndim is 0");
+}
+
+CTEST(SUITE_NAME, test_tensor_ones_valid) {
+  size_t shape[] = {2, 6};
+  Tensor *t = matlib_tensor_ones(2, shape);
+
+  ASSERT_PTR_NOT_NULL(
+      t, "matlib_tensor_ones() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(t->ndim, 2,
+                "One-initialised tensor ndim value should match input ndim");
+  ASSERT_INT_EQ(
+      t->total_size, 12,
+      "One-initialised tensor total_size value should be product of shape");
+
+  ASSERT_INT_EQ(t->shape[0], 2, "");
+  ASSERT_INT_EQ(t->shape[1], 6, "");
+
+  ASSERT_INT_EQ(t->strides[0], 6, "");
+  ASSERT_INT_EQ(t->strides[1], 1, "");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_ones_all_items_one) {
+  size_t shape[] = {2};
+  Tensor *t = matlib_tensor_ones(1, shape);
+  ASSERT_DOUBLE_EQ(t->data[0], 1.0f, EPSILON_VAL, "");
+  ASSERT_DOUBLE_EQ(t->data[1], 1.0f, EPSILON_VAL, "");
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_rand_zero_dim) {
+  size_t shape[] = {3, 0, 0, 5};
+  Tensor *t = matlib_tensor_rand(4, shape, 5.0f, 6.0f);
+
+  ASSERT_PTR_NULL(t, "matlib_tensor_rand() should return a NULL pointer when a "
+                     "dimension is zeros");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_rand_0d) {
+  size_t shape[1];
+  Tensor *t = matlib_tensor_rand(0, shape, 0.0f, 10.0f);
+
+  ASSERT_PTR_NULL(
+      t, "matlib_tensor_rand() should return a NULL pointer when ndim is 0");
+}
+
+CTEST(SUITE_NAME, test_tensor_rand_valid) {
+  size_t shape[] = {4, 3, 7};
+  Tensor *t = matlib_tensor_rand(3, shape, -1.0f, 5.0f);
+
+  ASSERT_PTR_NOT_NULL(
+      t, "matlib_tensor_rand() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(
+      t->ndim, 3,
+      "Randomly-initialised tensor ndim value should match input ndim");
+  ASSERT_INT_EQ(t->total_size, 84,
+                "Randomly-initialised tensor total_size value should be "
+                "product of shape");
+
+  ASSERT_INT_EQ(t->shape[0], 4, "");
+  ASSERT_INT_EQ(t->shape[1], 3, "");
+  ASSERT_INT_EQ(t->shape[2], 7, "");
+
+  ASSERT_INT_EQ(t->strides[0], 21, "");
+  ASSERT_INT_EQ(t->strides[1], 7, "");
+  ASSERT_INT_EQ(t->strides[2], 1, "");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_rand_all_items_rand_in_bounds) {
+  size_t shape[] = {1, 3, 1};
+  Tensor *t = matlib_tensor_rand(3, shape, 2.5f, 3.1f);
+
+  ASSERT(t->data[0] >= 2.5f && t->data[0] < 3.4f, "");
+  ASSERT(t->data[1] >= 2.5f && t->data[1] < 3.4f, "");
+  ASSERT(t->data[2] >= 2.5f && t->data[2] < 3.4f, "");
+  ASSERT(t->data[0] != t->data[1] && t->data[0] != t->data[2] &&
+             t->data[1] != t->data[2],
+         "");
+
+  matlib_tensor_free(t);
+}
