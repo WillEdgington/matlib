@@ -274,4 +274,85 @@ CTEST(SUITE_NAME, test_tensor_set_2d_in_bound) {
   matlib_tensor_free(t);
 }
 
-CTEST(SUITE_NAME, test_tensor) {}
+CTEST(SUITE_NAME, test_tensor_reshape_valid) {
+  size_t shape[] = {2, 3, 4};
+  Tensor *t = matlib_tensor_zeros(3, shape);
+
+  t->data[23] = 42.5f;
+
+  size_t new_shape[] = {4, 6};
+  Tensor *reshaped = matlib_tensor_reshape(t, 2, new_shape);
+
+  ASSERT_PTR_NOT_NULL(reshaped, "matlib_tensor_reshape() should return a valid "
+                                "Tensor pointer for valid total_size");
+  ASSERT_INT_EQ(reshaped->ndim, 2, "Reshaped ndim should match new_ndim");
+  ASSERT_INT_EQ(reshaped->total_size, 24, "Total size must remain invariant");
+
+  ASSERT_INT_EQ(reshaped->shape[0], 4, "");
+  ASSERT_INT_EQ(reshaped->shape[1], 6, "");
+
+  ASSERT_DOUBLE_EQ(reshaped->data[23], 42.5f, EPSILON_VAL,
+                   "Data values should map correctly after reshape");
+
+  matlib_tensor_free(t);
+  matlib_tensor_free(reshaped);
+}
+
+CTEST(SUITE_NAME, test_tensor_reshape_invalid_size) {
+  size_t shape[] = {2, 3, 4}; // total_size = 24
+  Tensor *t = matlib_tensor_zeros(3, shape);
+
+  size_t invalid_shape[] = {5, 5}; // total_size = 25
+  Tensor *reshaped = matlib_tensor_reshape(t, 2, invalid_shape);
+
+  ASSERT_PTR_NULL(
+      reshaped,
+      "matlib_tensor_reshape() should return NULL when total_size mismatches");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_reshape_invalid_ndim) {
+  size_t shape[] = {2, 2};
+  Tensor *t = matlib_tensor_zeros(2, shape);
+
+  Tensor *reshaped = matlib_tensor_reshape(t, 0, shape);
+  ASSERT_PTR_NULL(
+      reshaped,
+      "matlib_tensor_reshape() should return NULL when new_ndim is 0");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_permute_valid_3d) {
+  size_t shape[] = {2, 3, 4};
+  Tensor *t = matlib_tensor_zeros(3, shape);
+
+  size_t coords_orig[] = {1, 2, 3};
+  matlib_tensor_set(t, coords_orig, 99.0f);
+
+  size_t axes[] = {2, 0, 1};
+  Tensor *permuted = matlib_tensor_permute(t, axes);
+
+  ASSERT_PTR_NOT_NULL(
+      permuted, "matlib_tensor_permute() should return a valid tensor pointer");
+  ASSERT_INT_EQ(permuted->ndim, 3, "Permuted ndim should match original ndim");
+
+  // shape permutation = {4, 2, 3}
+  ASSERT_INT_EQ(permuted->shape[0], 4, "");
+  ASSERT_INT_EQ(permuted->shape[1], 2, "");
+  ASSERT_INT_EQ(permuted->shape[2], 3, "");
+
+  // stride permutation = {6, 3, 1}
+  ASSERT_INT_EQ(permuted->strides[0], 6, "");
+  ASSERT_INT_EQ(permuted->strides[1], 3, "");
+  ASSERT_INT_EQ(permuted->strides[2], 1, "");
+
+  size_t coords_perm[] = {3, 1, 2};
+  ASSERT_DOUBLE_EQ(
+      matlib_tensor_get(permuted, coords_perm), 99.0f, EPSILON_VAL,
+      "Permuted tensor should access correct data via remapped coordinates");
+
+  matlib_tensor_free(t);
+  matlib_tensor_free(permuted);
+}
