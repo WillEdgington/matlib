@@ -228,3 +228,50 @@ CTEST(SUITE_NAME, test_tensor_rand_all_items_rand_in_bounds) {
 
   matlib_tensor_free(t);
 }
+
+CTEST(SUITE_NAME, test_tensor_get_3d_in_bound) {
+  size_t shape[] = {2, 2, 3};
+  Tensor *t = matlib_tensor_zeros(3, shape);
+
+  size_t coords[] = {1, 0, 2};
+  // t->strides = {6, 3, 1}
+  t->data[(6 * 1) + (3 * 0) + 2] = 5.6f;
+  ASSERT_DOUBLE_EQ(
+      matlib_tensor_get(t, coords), 5.6f, EPSILON_VAL,
+      "matlib_tensor_get() call should return the value at coords (3D)");
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_get_4d_in_bound) {
+  size_t shape[] = {5, 2, 4, 4};
+  Tensor *t = matlib_tensor_zeros(4, shape);
+
+  size_t coords[] = {3, 1, 2, 1};
+  // t->strides = {32, 16, 4, 1}
+  t->data[(32 * 3) + (16 * 1) + (4 * 2) + 1] = 5.6f;
+  ASSERT_DOUBLE_EQ(
+      matlib_tensor_get(t, coords), 5.6f, EPSILON_VAL,
+      "matlib_tensor_get() call should return the value at coords (4D)");
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_set_2d_in_bound) {
+  size_t shape[] = {3, 2};
+  Tensor *t = matlib_tensor_zeros(2, shape);
+
+  size_t coords1[] = {2, 0};
+  matlib_tensor_set(t, coords1, 3.2f);
+
+  size_t coords2[] = {1, 1};
+  matlib_tensor_set(t, coords2, -6.3f);
+
+  // t->strides = {2, 1}
+  ASSERT_DOUBLE_EQ(t->data[2 * 2], 3.2f, EPSILON_VAL, "");
+  ASSERT_DOUBLE_EQ(t->data[(2 * 1) + 1], -6.3f, EPSILON_VAL, "");
+  ASSERT_DOUBLE_EQ(t->data[2 * 1], 0.0f, EPSILON_VAL, "");
+  ASSERT_DOUBLE_EQ(t->data[(2 * 2) + 1], 0.0f, EPSILON_VAL, "");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor) {}
