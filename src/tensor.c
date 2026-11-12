@@ -113,3 +113,22 @@ Tensor *matlib_tensor_rand(size_t ndim, const size_t *shape, float min,
 
   return tensor;
 }
+
+static size_t flatten_coords(const Tensor *tensor, const size_t *coords) {
+  size_t flat_idx = coords[0] * tensor->strides[0];
+
+  for (size_t i = 1; i < tensor->ndim; i++) {
+    flat_idx += coords[i] * tensor->strides[i];
+  }
+  return flat_idx;
+}
+
+float matlib_tensor_get(const Tensor *tensor, const size_t *coords) {
+  size_t flat_idx = flatten_coords(tensor, coords);
+  return tensor->data[flat_idx];
+}
+
+void matlib_tensor_set(Tensor *tensor, const size_t *coords, float val) {
+  size_t flat_idx = flatten_coords(tensor, coords);
+  tensor->data[flat_idx] = val;
+}

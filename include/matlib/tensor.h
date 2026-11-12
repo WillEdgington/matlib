@@ -19,4 +19,7 @@ Tensor *matlib_tensor_ones(size_t ndim, const size_t *shape);
 Tensor *matlib_tensor_rand(size_t ndim, const size_t *shape, float min,
                            float max);
 
+float matlib_tensor_get(const Tensor *tensor, const size_t *coords);
+void matlib_tensor_set(Tensor *tensor, const size_t *coords, float val);
+
 #endif
