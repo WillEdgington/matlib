@@ -174,3 +174,81 @@ Tensor *matlib_tensor_permute(const Tensor *tensor, const size_t *axes) {
 
   return new;
 }
+
+Tensor *matlib_tensor_add(const Tensor *a, const Tensor *b) {
+  Tensor *c = matlib_tensor_create(a->ndim, a->shape);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < c->total_size; i++) {
+    c->data[i] = a->data[i] + b->data[i];
+  }
+
+  return c;
+}
+
+Tensor *matlib_tensor_sub(const Tensor *a, const Tensor *b) {
+  Tensor *c = matlib_tensor_create(a->ndim, a->shape);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < c->total_size; i++) {
+    c->data[i] = a->data[i] - b->data[i];
+  }
+
+  return c;
+}
+
+Tensor *matlib_tensor_mul_elementwise(const Tensor *a, const Tensor *b) {
+  Tensor *c = matlib_tensor_create(a->ndim, a->shape);
+  if (c == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < c->total_size; i++) {
+    c->data[i] = a->data[i] * b->data[i];
+  }
+
+  return c;
+}
+
+Tensor *matlib_tensor_add_scalar(const Tensor *tensor, float scalar) {
+  Tensor *res = matlib_tensor_create(tensor->ndim, tensor->shape);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < res->total_size; i++) {
+    res->data[i] = tensor->data[i] + scalar;
+  }
+
+  return res;
+}
+
+Tensor *matlib_tensor_sub_scalar(const Tensor *tensor, float scalar) {
+  Tensor *res = matlib_tensor_create(tensor->ndim, tensor->shape);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < res->total_size; i++) {
+    res->data[i] = tensor->data[i] - scalar;
+  }
+
+  return res;
+}
+
+Tensor *matlib_tensor_scale(const Tensor *tensor, float scalar) {
+  Tensor *res = matlib_tensor_create(tensor->ndim, tensor->shape);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < res->total_size; i++) {
+    res->data[i] = tensor->data[i] * scalar;
+  }
+
+  return res;
+}
