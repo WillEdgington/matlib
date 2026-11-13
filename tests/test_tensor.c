@@ -356,3 +356,107 @@ CTEST(SUITE_NAME, test_tensor_permute_valid_3d) {
   matlib_tensor_free(t);
   matlib_tensor_free(permuted);
 }
+
+CTEST(SUITE_NAME, test_tensor_add_2d) {
+  size_t shape[] = {2, 2};
+  Tensor *a = matlib_tensor_rand(2, shape, -10.0f, 10.0f);
+  Tensor *b = matlib_tensor_rand(2, shape, -10.0f, 10.0f);
+
+  Tensor *c = matlib_tensor_add(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c, "matlib_tensor_add() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(c->ndim, 2, "Result tensor should match input ndims");
+  ASSERT_INT_EQ(c->total_size, 4,
+                "Result tensor should match input total_sizes");
+
+  ASSERT_INT_EQ(c->shape[0], 2, "");
+  ASSERT_INT_EQ(c->shape[1], 2, "");
+
+  ASSERT_INT_EQ(c->strides[0], 2, "");
+  ASSERT_INT_EQ(c->strides[1], 1, "");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] + b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] + b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] + b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal sum of inputs");
+  ASSERT_DOUBLE_EQ(c->data[3], a->data[3] + b->data[3], EPSILON_VAL,
+                   "Element at flat index 3 should equal sum of inputs");
+
+  matlib_tensor_free(a);
+  matlib_tensor_free(b);
+  matlib_tensor_free(c);
+}
+
+CTEST(SUITE_NAME, test_tensor_sub_3d) {
+  size_t shape[] = {1, 3, 1};
+  Tensor *a = matlib_tensor_rand(3, shape, -10.0f, 10.0f);
+  Tensor *b = matlib_tensor_rand(3, shape, -10.0f, 10.0f);
+
+  Tensor *c = matlib_tensor_sub(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c, "matlib_tensor_sub() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(c->ndim, 3, "Result tensor should match input ndims");
+  ASSERT_INT_EQ(c->total_size, 3,
+                "Result tensor should match input total_sizes");
+
+  ASSERT_INT_EQ(c->shape[0], 1, "");
+  ASSERT_INT_EQ(c->shape[1], 3, "");
+  ASSERT_INT_EQ(c->shape[2], 1, "");
+
+  ASSERT_INT_EQ(c->strides[0], 3, "");
+  ASSERT_INT_EQ(c->strides[1], 1, "");
+  ASSERT_INT_EQ(c->strides[2], 1, "");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] - b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal difference of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] - b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal difference of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] - b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal difference of inputs");
+
+  matlib_tensor_free(a);
+  matlib_tensor_free(b);
+  matlib_tensor_free(c);
+}
+
+CTEST(SUITE_NAME, test_tensor_mul_elementwise_4d) {
+  size_t shape[] = {1, 2, 1, 2};
+  Tensor *a = matlib_tensor_rand(4, shape, -10.0f, 10.0f);
+  Tensor *b = matlib_tensor_rand(4, shape, -10.0f, 10.0f);
+
+  Tensor *c = matlib_tensor_mul_elementwise(a, b);
+
+  ASSERT_PTR_NOT_NULL(
+      c,
+      "matlib_tensor_mul_elementwise() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(c->ndim, 4, "Result tensor should match input ndims");
+  ASSERT_INT_EQ(c->total_size, 4,
+                "Result tensor should match input total_sizes");
+
+  ASSERT_INT_EQ(c->shape[0], 1, "");
+  ASSERT_INT_EQ(c->shape[1], 2, "");
+  ASSERT_INT_EQ(c->shape[2], 1, "");
+  ASSERT_INT_EQ(c->shape[3], 2, "");
+
+  ASSERT_INT_EQ(c->strides[0], 4, "");
+  ASSERT_INT_EQ(c->strides[1], 2, "");
+  ASSERT_INT_EQ(c->strides[2], 2, "");
+  ASSERT_INT_EQ(c->strides[3], 1, "");
+
+  ASSERT_DOUBLE_EQ(c->data[0], a->data[0] * b->data[0], EPSILON_VAL,
+                   "Element at flat index 0 should equal product of inputs");
+  ASSERT_DOUBLE_EQ(c->data[1], a->data[1] * b->data[1], EPSILON_VAL,
+                   "Element at flat index 1 should equal product of inputs");
+  ASSERT_DOUBLE_EQ(c->data[2], a->data[2] * b->data[2], EPSILON_VAL,
+                   "Element at flat index 2 should equal product of inputs");
+  ASSERT_DOUBLE_EQ(c->data[3], a->data[3] * b->data[3], EPSILON_VAL,
+                   "Element at flat index 3 should equal product of inputs");
+
+  matlib_tensor_free(a);
+  matlib_tensor_free(b);
+  matlib_tensor_free(c);
+}
