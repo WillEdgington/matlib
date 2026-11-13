@@ -460,3 +460,98 @@ CTEST(SUITE_NAME, test_tensor_mul_elementwise_4d) {
   matlib_tensor_free(b);
   matlib_tensor_free(c);
 }
+
+CTEST(SUITE_NAME, test_tensor_add_scalar_3d) {
+  size_t shape[] = {1, 3, 1};
+  Tensor *t = matlib_tensor_rand(3, shape, -10.0f, 10.0f);
+
+  Tensor *res = matlib_tensor_add_scalar(t, 4.1f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_tensor_add_scalar() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(res->ndim, 3, "Result tensor should match input ndims");
+  ASSERT_INT_EQ(res->total_size, 3,
+                "Result tensor should match input total_sizes");
+
+  ASSERT_INT_EQ(res->shape[0], 1, "");
+  ASSERT_INT_EQ(res->shape[1], 3, "");
+  ASSERT_INT_EQ(res->shape[2], 1, "");
+
+  ASSERT_INT_EQ(res->strides[0], 3, "");
+  ASSERT_INT_EQ(res->strides[1], 1, "");
+  ASSERT_INT_EQ(res->strides[2], 1, "");
+
+  ASSERT_DOUBLE_EQ(res->data[0], t->data[0] + 4.1f, EPSILON_VAL,
+                   "Element at flat index 0 should equal input + scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], t->data[1] + 4.1f, EPSILON_VAL,
+                   "Element at flat index 1 should equal input + scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], t->data[2] + 4.1f, EPSILON_VAL,
+                   "Element at flat index 2 should equal input + scalar");
+
+  matlib_tensor_free(t);
+  matlib_tensor_free(res);
+}
+
+CTEST(SUITE_NAME, test_tensor_sub_scalar_4d) {
+  size_t shape[] = {1, 2, 2, 1};
+  Tensor *t = matlib_tensor_rand(4, shape, -10.0f, 10.0f);
+
+  Tensor *res = matlib_tensor_sub_scalar(t, 5.8f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_tensor_sub_scalar() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(res->ndim, 4, "Result tensor should match input ndims");
+  ASSERT_INT_EQ(res->total_size, 4,
+                "Result tensor should match input total_sizes");
+
+  ASSERT_INT_EQ(res->shape[0], 1, "");
+  ASSERT_INT_EQ(res->shape[1], 2, "");
+  ASSERT_INT_EQ(res->shape[2], 2, "");
+  ASSERT_INT_EQ(res->shape[3], 1, "");
+
+  ASSERT_INT_EQ(res->strides[0], 4, "");
+  ASSERT_INT_EQ(res->strides[1], 2, "");
+  ASSERT_INT_EQ(res->strides[2], 1, "");
+  ASSERT_INT_EQ(res->strides[3], 1, "");
+
+  ASSERT_DOUBLE_EQ(res->data[0], t->data[0] - 5.8f, EPSILON_VAL,
+                   "Element at flat index 0 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], t->data[1] - 5.8f, EPSILON_VAL,
+                   "Element at flat index 1 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], t->data[2] - 5.8f, EPSILON_VAL,
+                   "Element at flat index 2 should equal input - scalar");
+  ASSERT_DOUBLE_EQ(res->data[3], t->data[3] - 5.8f, EPSILON_VAL,
+                   "Element at flat index 3 should equal input - scalar");
+
+  matlib_tensor_free(t);
+  matlib_tensor_free(res);
+}
+
+CTEST(SUITE_NAME, test_tensor_scale_2d) {
+  size_t shape[] = {3, 1};
+  Tensor *t = matlib_tensor_rand(2, shape, -10.0f, 10.0f);
+
+  Tensor *res = matlib_tensor_scale(t, 2.8f);
+
+  ASSERT_PTR_NOT_NULL(
+      res, "matlib_tensor_scale() should return a valid Tensor pointer");
+  ASSERT_INT_EQ(res->ndim, 2, "Result tensor should match input ndims");
+  ASSERT_INT_EQ(res->total_size, 3,
+                "Result tensor should match input total_sizes");
+
+  ASSERT_INT_EQ(res->shape[0], 3, "");
+  ASSERT_INT_EQ(res->shape[1], 1, "");
+
+  ASSERT_INT_EQ(res->strides[0], 1, "");
+  ASSERT_INT_EQ(res->strides[1], 1, "");
+
+  ASSERT_DOUBLE_EQ(res->data[0], t->data[0] * 2.8f, EPSILON_VAL,
+                   "Element at flat index 0 should equal input * scalar");
+  ASSERT_DOUBLE_EQ(res->data[1], t->data[1] * 2.8f, EPSILON_VAL,
+                   "Element at flat index 1 should equal input * scalar");
+  ASSERT_DOUBLE_EQ(res->data[2], t->data[2] * 2.8f, EPSILON_VAL,
+                   "Element at flat index 2 should equal input * scalar");
+
+  matlib_tensor_free(t);
+  matlib_tensor_free(res);
+}
