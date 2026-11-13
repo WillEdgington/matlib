@@ -26,4 +26,8 @@ Tensor *matlib_tensor_reshape(const Tensor *tensor, size_t new_ndim,
                               const size_t *new_shape);
 Tensor *matlib_tensor_permute(const Tensor *tensor, const size_t *axes);
 
+Tensor *matlib_tensor_add(const Tensor *a, const Tensor *b);
+Tensor *matlib_tensor_sub(const Tensor *a, const Tensor *b);
+Tensor *matlib_tensor_mul_elementwise(const Tensor *a, const Tensor *b);
+
 #endif
