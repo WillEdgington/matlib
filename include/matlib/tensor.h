@@ -30,4 +30,8 @@ Tensor *matlib_tensor_add(const Tensor *a, const Tensor *b);
 Tensor *matlib_tensor_sub(const Tensor *a, const Tensor *b);
 Tensor *matlib_tensor_mul_elementwise(const Tensor *a, const Tensor *b);
 
+Tensor *matlib_tensor_add_scalar(const Tensor *tensor, float scalar);
+Tensor *matlib_tensor_sub_scalar(const Tensor *tensor, float scalar);
+Tensor *matlib_tensor_scale(const Tensor *tensor, float scalar);
+
 #endif

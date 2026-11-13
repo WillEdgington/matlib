@@ -213,3 +213,42 @@ Tensor *matlib_tensor_mul_elementwise(const Tensor *a, const Tensor *b) {
 
   return c;
 }
+
+Tensor *matlib_tensor_add_scalar(const Tensor *tensor, float scalar) {
+  Tensor *res = matlib_tensor_create(tensor->ndim, tensor->shape);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < res->total_size; i++) {
+    res->data[i] = tensor->data[i] + scalar;
+  }
+
+  return res;
+}
+
+Tensor *matlib_tensor_sub_scalar(const Tensor *tensor, float scalar) {
+  Tensor *res = matlib_tensor_create(tensor->ndim, tensor->shape);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < res->total_size; i++) {
+    res->data[i] = tensor->data[i] - scalar;
+  }
+
+  return res;
+}
+
+Tensor *matlib_tensor_scale(const Tensor *tensor, float scalar) {
+  Tensor *res = matlib_tensor_create(tensor->ndim, tensor->shape);
+  if (res == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < res->total_size; i++) {
+    res->data[i] = tensor->data[i] * scalar;
+  }
+
+  return res;
+}
