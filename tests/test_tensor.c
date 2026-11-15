@@ -555,3 +555,99 @@ CTEST(SUITE_NAME, test_tensor_scale_2d) {
   matlib_tensor_free(t);
   matlib_tensor_free(res);
 }
+
+CTEST(SUITE_NAME, test_tensor_sum_mixed_4d) {
+  size_t shape[] = {1, 2, 1, 2};
+  Tensor *t = matlib_tensor_create(4, shape);
+
+  t->data[0] = 5.9f;
+  t->data[1] = 0.0f;
+  t->data[2] = -3.2f;
+  t->data[3] = 9.6f;
+
+  ASSERT_DOUBLE_EQ(matlib_tensor_sum(t), 12.3f, EPSILON_VAL,
+                   "matlib_tensor_sum() call should return accumalated sum of "
+                   "tensor elements");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_mean_mixed_3d) {
+  size_t shape[] = {3, 2, 1};
+  Tensor *t = matlib_tensor_create(3, shape);
+
+  t->data[0] = 3.4f;
+  t->data[1] = 8.2f;
+  t->data[2] = -6.7f;
+  t->data[3] = 0.0f;
+  t->data[4] = 1.6f;
+  t->data[5] = -0.8f;
+
+  ASSERT_DOUBLE_EQ(matlib_tensor_mean(t), 0.95f, EPSILON_VAL,
+                   "matlib_tensor_mean() call should return the mean of the "
+                   "tensor elements");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_max_mixed_2d) {
+  size_t shape[] = {1, 3};
+  Tensor *t = matlib_tensor_create(2, shape);
+
+  t->data[0] = -9.2f;
+  t->data[1] = 0.0f;
+  t->data[2] = 3.2f;
+
+  ASSERT_DOUBLE_EQ(matlib_tensor_max(t), 3.2f, EPSILON_VAL,
+                   "matlib_tensor_max() call should return the greatest "
+                   "element in the tensor");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_max_negative_4d) {
+  size_t shape[] = {2, 2, 1, 1};
+  Tensor *t = matlib_tensor_create(4, shape);
+
+  t->data[0] = -2.3f;
+  t->data[1] = -8.1f;
+  t->data[2] = -7.2f;
+  t->data[3] = -0.6f;
+
+  ASSERT_DOUBLE_EQ(matlib_tensor_max(t), -0.6f, EPSILON_VAL,
+                   "matlib_tensor_max() call should return greatest element of "
+                   "completely negative tensor");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_min_mixed_3d) {
+  size_t shape[] = {1, 2, 2};
+  Tensor *t = matlib_tensor_create(3, shape);
+
+  t->data[0] = 5.2f;
+  t->data[1] = -3.1f;
+  t->data[2] = 0.0f;
+  t->data[3] = 0.4f;
+
+  ASSERT_DOUBLE_EQ(matlib_tensor_min(t), -3.1f, EPSILON_VAL,
+                   "matlib_tensor_min() call should return the smallest "
+                   "element in the tensor");
+
+  matlib_tensor_free(t);
+}
+
+CTEST(SUITE_NAME, test_tensor_min_positive_2d) {
+  size_t shape[] = {3, 1};
+  Tensor *t = matlib_tensor_create(2, shape);
+
+  t->data[0] = 10.4f;
+  t->data[1] = 2.1f;
+  t->data[2] = 4.8f;
+
+  ASSERT_DOUBLE_EQ(matlib_tensor_min(t), 2.1f, EPSILON_VAL,
+                   "matlib_tensor_min() call should return smallest element of "
+                   "tensor where all elements are > 0");
+
+  matlib_tensor_free(t);
+}
