@@ -34,4 +34,9 @@ Tensor *matlib_tensor_add_scalar(const Tensor *tensor, float scalar);
 Tensor *matlib_tensor_sub_scalar(const Tensor *tensor, float scalar);
 Tensor *matlib_tensor_scale(const Tensor *tensor, float scalar);
 
+float matlib_tensor_sum(const Tensor *tensor);
+float matlib_tensor_mean(const Tensor *tensor);
+float matlib_tensor_max(const Tensor *tensor);
+float matlib_tensor_min(const Tensor *tensor);
+
 #endif

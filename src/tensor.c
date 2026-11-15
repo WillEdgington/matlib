@@ -252,3 +252,42 @@ Tensor *matlib_tensor_scale(const Tensor *tensor, float scalar) {
 
   return res;
 }
+
+float matlib_tensor_sum(const Tensor *tensor) {
+  float res = tensor->data[0];
+
+  for (size_t i = 1; i < tensor->total_size; i++) {
+    res += tensor->data[i];
+  }
+  return res;
+}
+
+float matlib_tensor_mean(const Tensor *tensor) {
+  return matlib_tensor_sum(tensor) / tensor->total_size;
+}
+
+float matlib_tensor_max(const Tensor *tensor) {
+  float res = tensor->data[0];
+
+  for (size_t i = 1; i < tensor->total_size; i++) {
+    float cur = tensor->data[i];
+    if (res < cur) {
+      res = cur;
+    }
+  }
+
+  return res;
+}
+
+float matlib_tensor_min(const Tensor *tensor) {
+  float res = tensor->data[0];
+
+  for (size_t i = 1; i < tensor->total_size; i++) {
+    float cur = tensor->data[i];
+    if (cur < res) {
+      res = cur;
+    }
+  }
+
+  return res;
+}
