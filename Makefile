@@ -29,6 +29,7 @@ CTEST_PATH = deps/ctest/ctest
 .PHONY: all clean test debug setup_deps
 
 all: $(LIB_A)
+all: CFLAGS += $(RELFLAGS)
 
 debug: CFLAGS += $(DEVFLAGS)
 debug: LDFLAGS += $(DEVFLAGS)
