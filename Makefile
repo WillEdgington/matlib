@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -pedantic -std=c11 -Iinclude -MMD -MP
 LDFLAGS = 
 DEVFLAGS = -fsanitize=address,undefined -g
-RELFLAGS = -O3
+RELFLAGS = -O3 -march=native
 
 DEP_DIRS := $(wildcard deps/*) $(wildcard deps/*/deps/*)
 DEP_NAMES := $(notdir $(DEP_DIRS))
