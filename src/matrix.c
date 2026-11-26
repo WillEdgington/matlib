@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define ALIGNMENT_VAL 32
+#define TILE_SIZE 8
 
 Matrix *matlib_matrix_create(size_t rows, size_t cols) {
   if (rows == 0 || cols == 0) {
@@ -89,9 +90,25 @@ Matrix *matlib_matrix_transpose(const Matrix *mat) {
     return NULL;
   }
 
-  for (size_t r = 0; r < mat->rows; r++) {
-    for (size_t c = 0; c < mat->cols; c++) {
-      t_mat->data[(mat->rows * c) + r] = mat->data[(mat->cols * r) + c];
+  const size_t rows = mat->rows;
+  const size_t cols = mat->cols;
+  const float *restrict src = mat->data;
+  float *restrict dst = t_mat->data;
+
+  for (size_t r_start = 0; r_start < rows; r_start += TILE_SIZE) {
+    const size_t r_end =
+        (r_start + TILE_SIZE < rows) ? r_start + TILE_SIZE : rows;
+
+    for (size_t c_start = 0; c_start < cols; c_start += TILE_SIZE) {
+      const size_t c_end =
+          (c_start + TILE_SIZE < cols) ? c_start + TILE_SIZE : cols;
+
+      for (size_t r = r_start; r < r_end; r++) {
+        const float *src_row = src + (r * cols);
+        for (size_t c = c_start; c < c_end; c++) {
+          dst[(c * rows) + r] = src_row[c];
+        }
+      }
     }
   }
 
