@@ -254,25 +254,119 @@ Tensor *matlib_tensor_scale(const Tensor *tensor, float scalar) {
 }
 
 float matlib_tensor_sum(const Tensor *tensor) {
-  float res = tensor->data[0];
+  const size_t n = tensor->total_size;
+  const float *restrict data = tensor->data;
 
-  for (size_t i = 1; i < tensor->total_size; i++) {
-    res += tensor->data[i];
+  // unroll to eight
+  float acc0 = 0.0f;
+  float acc1 = 0.0f;
+  float acc2 = 0.0f;
+  float acc3 = 0.0f;
+  float acc4 = 0.0f;
+  float acc5 = 0.0f;
+  float acc6 = 0.0f;
+  float acc7 = 0.0f;
+
+  size_t i = 0;
+  for (; i + 8 <= n; i += 8) {
+    acc0 += data[i];
+    acc1 += data[i + 1];
+    acc2 += data[i + 2];
+    acc3 += data[i + 3];
+    acc4 += data[i + 4];
+    acc5 += data[i + 5];
+    acc6 += data[i + 6];
+    acc7 += data[i + 7];
   }
-  return res;
+
+  for (; i < n; i++) {
+    acc0 += data[i];
+  }
+
+  return (acc0 + acc1) + (acc2 + acc3) + (acc4 + acc5) + (acc6 + acc7);
 }
 
 float matlib_tensor_mean(const Tensor *tensor) {
-  return matlib_tensor_sum(tensor) / tensor->total_size;
+  return matlib_tensor_sum(tensor) / (float)tensor->total_size;
 }
 
 float matlib_tensor_max(const Tensor *tensor) {
-  float res = tensor->data[0];
+  const size_t n = tensor->total_size;
+  const float *restrict data = tensor->data;
 
-  for (size_t i = 1; i < tensor->total_size; i++) {
-    float cur = tensor->data[i];
-    if (res < cur) {
-      res = cur;
+  // unroll to eight
+  float m0 = data[0];
+  float m1 = data[0];
+  float m2 = data[0];
+  float m3 = data[0];
+  float m4 = data[0];
+  float m5 = data[0];
+  float m6 = data[0];
+  float m7 = data[0];
+
+  size_t i = 0;
+  for (; i + 8 <= n; i += 8) {
+    const float v0 = data[i];
+    const float v1 = data[i + 1];
+    const float v2 = data[i + 2];
+    const float v3 = data[i + 3];
+    const float v4 = data[i + 4];
+    const float v5 = data[i + 5];
+    const float v6 = data[i + 6];
+    const float v7 = data[i + 7];
+
+    if (v0 > m0) {
+      m0 = v0;
+    }
+    if (v1 > m1) {
+      m1 = v1;
+    }
+    if (v2 > m2) {
+      m2 = v2;
+    }
+    if (v3 > m3) {
+      m3 = v3;
+    }
+    if (v4 > m4) {
+      m4 = v4;
+    }
+    if (v5 > m5) {
+      m5 = v5;
+    }
+    if (v6 > m6) {
+      m6 = v6;
+    }
+    if (v7 > m7) {
+      m7 = v7;
+    }
+  }
+
+  float res = m0;
+  if (m1 > res) {
+    res = m1;
+  }
+  if (m2 > res) {
+    res = m2;
+  }
+  if (m3 > res) {
+    res = m3;
+  }
+  if (m4 > res) {
+    res = m4;
+  }
+  if (m5 > res) {
+    res = m5;
+  }
+  if (m6 > res) {
+    res = m6;
+  }
+  if (m7 > res) {
+    res = m7;
+  }
+
+  for (; i < n; i++) {
+    if (data[i] > res) {
+      res = data[i];
     }
   }
 
@@ -280,12 +374,82 @@ float matlib_tensor_max(const Tensor *tensor) {
 }
 
 float matlib_tensor_min(const Tensor *tensor) {
-  float res = tensor->data[0];
+  const size_t n = tensor->total_size;
+  const float *restrict data = tensor->data;
 
-  for (size_t i = 1; i < tensor->total_size; i++) {
-    float cur = tensor->data[i];
-    if (cur < res) {
-      res = cur;
+  // unroll to eight
+  float m0 = data[0];
+  float m1 = data[0];
+  float m2 = data[0];
+  float m3 = data[0];
+  float m4 = data[0];
+  float m5 = data[0];
+  float m6 = data[0];
+  float m7 = data[0];
+
+  size_t i = 0;
+  for (; i + 8 <= n; i += 8) {
+    const float v0 = data[i];
+    const float v1 = data[i + 1];
+    const float v2 = data[i + 2];
+    const float v3 = data[i + 3];
+    const float v4 = data[i + 4];
+    const float v5 = data[i + 5];
+    const float v6 = data[i + 6];
+    const float v7 = data[i + 7];
+
+    if (v0 < m0) {
+      m0 = v0;
+    }
+    if (v1 < m1) {
+      m1 = v1;
+    }
+    if (v2 < m2) {
+      m2 = v2;
+    }
+    if (v3 < m3) {
+      m3 = v3;
+    }
+    if (v4 < m4) {
+      m4 = v4;
+    }
+    if (v5 < m5) {
+      m5 = v5;
+    }
+    if (v6 < m6) {
+      m6 = v6;
+    }
+    if (v7 < m7) {
+      m7 = v7;
+    }
+  }
+
+  float res = m0;
+  if (m1 < res) {
+    res = m1;
+  }
+  if (m2 < res) {
+    res = m2;
+  }
+  if (m3 < res) {
+    res = m3;
+  }
+  if (m4 < res) {
+    res = m4;
+  }
+  if (m5 < res) {
+    res = m5;
+  }
+  if (m6 < res) {
+    res = m6;
+  }
+  if (m7 < res) {
+    res = m7;
+  }
+
+  for (; i < n; i++) {
+    if (data[i] < res) {
+      res = data[i];
     }
   }
 
